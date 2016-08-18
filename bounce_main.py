@@ -7,12 +7,13 @@ class Ball:
         self.canvas = canvas
         self.paddle = paddle
         self.id = canvas.create_oval(10, 10, 25, 25, fill=color)
-        self.canvas.move(self.id, 245, 100)
-        self.x = random.choice((-3, -2, -1, 1, 2, 3))
-        self.y = -3
+        self.canvas.move(self.id, 180, 0)
+        self.x = 0
+        self.y = 1
         self.canvas_height = self.canvas.winfo_height()
         self.canvas_width = self.canvas.winfo_width()
         self.hit_bottom = False
+        self.canvas.bind_all('<KeyPress-space>', self.start)
 
     def hit_paddle(self, pos):
         paddle_pos = self.canvas.coords(self.paddle.id)
@@ -30,7 +31,7 @@ class Ball:
 
         if pos[3] >= self.canvas_height:
             # self.y = abs(self.y) * -1
-            self.hit_bottom = True
+            self.hit_bottom = c.create_text(200, 200, text='GAME OVER')
 
         if pos[0] <= 0:
             self.x = abs(self.x)
@@ -41,16 +42,22 @@ class Ball:
         if self.hit_paddle(pos):
             self.y = abs(self.x) * -1
 
+    def start(self, event):
+        if self.y == 0:
+            self.x = random.choice((-3, -2, -1, 1, 2, 3))
+            self.y = 7
+
 
 class Paddle:
     def __init__(self, canvas, color):
         self.canvas = canvas
         self.id = canvas.create_rectangle(0, 0, 100, 10, fill=color)
-        self.canvas.move(self.id, 200, 300)
+        self.canvas.move(self.id, 150, 450)
         self.x = 0
         self.canvas_width = self.canvas.winfo_width()
         self.canvas.bind_all('<KeyPress-Left>', self.turn_left)
         self.canvas.bind_all('<KeyPress-Right>', self.turn_right)
+
 
     def draw(self):
         self.canvas.move(self.id, self.x, 0)
@@ -69,16 +76,15 @@ class Paddle:
 
 
 tk = Tk()
-tk.title("Game")
+tk.title("隕石から地球をまもれ!!")
 tk.resizable(0, 0)
 tk.wm_attributes("-topmost", 1)
-c = Canvas(tk, width=500, height=400, bd=0, highlightthickness=0)
+c = Canvas(tk, width=400, height=600, bd=0, highlightthickness=0)
 c.pack()
 tk.update()
 
 p = Paddle(c, 'blue')
-ball = Ball(c, p, 'red')
-
+ball = Ball(c, p, 'yellow')
 
 def update():
     if not ball.hit_bottom:
@@ -87,8 +93,8 @@ def update():
 
     tk.update_idletasks()
     tk.update()
-    tk.after(10, update)
+    tk.after(5, update)
 
 
-tk.after(10, update)
+tk.after(5, update)
 tk.mainloop()
